@@ -1,6 +1,9 @@
 package com.example.networkinfohat;
 
+import android.util.Log;
+
 import com.google.android.things.contrib.driver.ht16k33.AlphanumericDisplay;
+import com.google.android.things.contrib.driver.ht16k33.Ht16k33;
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
 
 import java.io.IOException;
@@ -12,13 +15,24 @@ import java.util.TimerTask;
  */
 
 class Marquee {
-    private static final long MARQUEE_INTERVAL = 400;
+    private static final long MARQUEE_INTERVAL = 800;
     private static final int LCD_LENGTH = 4;
     public static final String PADDING = "    ";
 
     private Timer mTimer;
     private int mCurrentMarqueePos;
     private String mMarqueeText;
+
+    public Marquee () {
+        try {
+            AlphanumericDisplay display = RainbowHat.openDisplay();
+            display.setEnabled(true);
+            display.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
+            display.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void displayText(String text) {
         mMarqueeText = PADDING+text+ PADDING;
@@ -30,7 +44,7 @@ class Marquee {
             public void run() {
                 updateMarquee();
             }
-        }, 0, MARQUEE_INTERVAL);
+        }, MARQUEE_INTERVAL, MARQUEE_INTERVAL);
     }
 
     private void updateMarquee() {
@@ -69,6 +83,7 @@ class Marquee {
         if (mTimer != null) {
             mTimer.cancel();
             mTimer.purge();
+            mTimer = null;
         }
     }
 }

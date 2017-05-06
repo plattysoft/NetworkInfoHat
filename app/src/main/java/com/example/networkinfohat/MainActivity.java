@@ -9,7 +9,9 @@ import android.view.KeyEvent;
 
 import com.google.android.things.contrib.driver.button.ButtonInputDriver;
 import com.google.android.things.contrib.driver.ht16k33.AlphanumericDisplay;
+import com.google.android.things.contrib.driver.ht16k33.Ht16k33;
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
+import com.google.android.things.pio.Gpio;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -26,7 +28,6 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
-        updateNetworkStatus();
         // Click on the buttons can retry network
         try {
             mInputDriver = new ButtonInputDriver(RainbowHat.BUTTON_A,
@@ -57,6 +58,7 @@ public class MainActivity extends Activity {
                 updateNetworkStatus();
             }
         });
+        updateNetworkStatus();
     }
 
     @Override
@@ -96,6 +98,8 @@ public class MainActivity extends Activity {
     private void showError() {
         try {
             AlphanumericDisplay display = RainbowHat.openDisplay();
+            display.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
+            display.setEnabled(true);
             display.display("ERR-");
             display.close();
         } catch (IOException e) {
@@ -126,7 +130,9 @@ public class MainActivity extends Activity {
                     }
                 }
             }
-        } catch (Exception ex) { } // for now eat exceptions
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } // for now eat exceptions
         return "";
     }
 }
